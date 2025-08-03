@@ -5,57 +5,57 @@ import Router from 'next/router';
 export default function Home() {
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState('');
-
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
     if (!token) {
       Router.push('/login');
     } else {
-      fetchTodos();
+      fetchTodos(token);
     }
   }, []);
 
-  const fetchTodos = async () => {
+  const fetchTodos = async (token) => {
     try {
       const res = await axios.get('https://todo-fullstack-app-njwt.onrender.com/todos', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTodos(res.data);
     } catch (err) {
-      console.error('Failed to fetch todos:', err);
+      console.error('Auth failed. Redirecting...');
+      localStorage.removeItem('token');
+      Router.push('/login');
+    } finally {
+      setLoading(false);
     }
   };
 
   const addTodo = async () => {
-    try {
-      await axios.post(
-        'https://todo-fullstack-app-njwt.onrender.com/todos',
-        { title },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setTitle('');
-      fetchTodos();
-    } catch (err) {
-      console.error('Failed to add todo:', err);
-    }
+    const token = localStorage.getItem('token');
+    await axios.post(
+      'https://todo-fullstack-app-njwt.onrender.com/todos',
+      { title },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    setTitle('');
+    fetchTodos(token);
   };
 
   const deleteTodo = async (id) => {
-    try {
-      await axios.delete(`https://todo-fullstack-app-njwt.onrender.com/todos/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      fetchTodos();
-    } catch (err) {
-      console.error('Failed to delete todo:', err);
-    }
+    const token = localStorage.getItem('token');
+    await axios.delete(`https://todo-fullstack-app-njwt.onrender.com/todos/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    fetchTodos(token);
   };
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div style={{ padding: 20 }}>
       <h1>Your Todos</h1>
-      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="New todo" />
+      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder='New todo' />
       <button onClick={addTodo}>Add</button>
       <ul>
         {todos.map((todo) => (
