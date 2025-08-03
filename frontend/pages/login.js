@@ -6,13 +6,13 @@ export default function Login() {
   const [email, setEmail] = useState('');
 
   const login = async () => {
-    const res = await axios.post('http://localhost:5000/register', { email });
+    const res = await axios.post('https://todo-fullstack-app-njwt.onrender.com/register', { email });
     localStorage.setItem('token', res.data.access_token);
     Router.push('/');
   };
 
   const googleLogin = async () => {
-    const res = await axios.get('http://localhost:5000/login/google');
+    const res = await axios.get('https://todo-fullstack-app-njwt.onrender.com/login/google');
     if (res.data.auth_url) {
       window.location.href = res.data.auth_url;
     }

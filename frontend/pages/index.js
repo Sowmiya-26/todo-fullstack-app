@@ -9,38 +9,53 @@ export default function Home() {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
   useEffect(() => {
-    if (!token) Router.push('/login');
-    fetchTodos();
+    if (!token) {
+      Router.push('/login');
+    } else {
+      fetchTodos();
+    }
   }, []);
 
   const fetchTodos = async () => {
-    const res = await axios.get('http://localhost:5000/todos', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setTodos(res.data);
+    try {
+      const res = await axios.get('https://todo-fullstack-app-njwt.onrender.com/todos', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTodos(res.data);
+    } catch (err) {
+      console.error('Failed to fetch todos:', err);
+    }
   };
 
   const addTodo = async () => {
-    await axios.post(
-      'http://localhost:5000/todos',
-      { title },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    setTitle('');
-    fetchTodos();
+    try {
+      await axios.post(
+        'https://todo-fullstack-app-njwt.onrender.com/todos',
+        { title },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setTitle('');
+      fetchTodos();
+    } catch (err) {
+      console.error('Failed to add todo:', err);
+    }
   };
 
   const deleteTodo = async (id) => {
-    await axios.delete(`http://localhost:5000/todos/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    fetchTodos();
+    try {
+      await axios.delete(`https://todo-fullstack-app-njwt.onrender.com/todos/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchTodos();
+    } catch (err) {
+      console.error('Failed to delete todo:', err);
+    }
   };
 
   return (
     <div style={{ padding: 20 }}>
       <h1>Your Todos</h1>
-      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder='New todo' />
+      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="New todo" />
       <button onClick={addTodo}>Add</button>
       <ul>
         {todos.map((todo) => (
