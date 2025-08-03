@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: todo-backend
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python app.py"
+    envVars:
+      - key: SQLALCHEMY_DATABASE_URI
+        value: mysql+pymysql://root:12345678@your-db-host:3306/todo_db
+      - key: SECRET_KEY
+        value: sowmiya_26
+      - key: JWT_SECRET_KEY
+        value: sowmiya_2005
+      - key: MAIL_USERNAME
+        value: sowmiyagopalraj@gmail.com
+      - key: MAIL_PASSWORD
+        value: rcsn xobx iwgt nhsf
+        envVars:
+         envVars:
+      - key: GOOGLE_CLIENT_ID
+        value: your-google-client-id
+      - key: GOOGLE_CLIENT_SECRET
+        value: your-google-client-secret
+
+
