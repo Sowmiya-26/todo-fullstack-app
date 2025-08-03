@@ -107,6 +107,9 @@ def update_delete_todo(id):
     db.session.delete(todo)
     db.session.commit()
     return jsonify({"msg": "Deleted"})
+@app.route('/')
+def home():
+    return jsonify({"status": "✅ Backend is running!"})
 
 if __name__ == '__main__':
     with app.app_context():
