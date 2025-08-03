@@ -5,56 +5,50 @@ import Router from 'next/router';
 export default function Home() {
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState('');
-  const [loading, setLoading] = useState(true);
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     if (!token) {
       Router.push('/login');
     } else {
-      fetchTodos(token);
+      fetchTodos();
     }
   }, []);
 
-  const fetchTodos = async (token) => {
-    try {
-      const res = await axios.get('https://todo-fullstack-app-njwt.onrender.com/todos', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setTodos(res.data);
-    } catch (err) {
-      console.error('Auth failed. Redirecting...');
-      localStorage.removeItem('token');
-      Router.push('/login');
-    } finally {
-      setLoading(false);
-    }
+  const fetchTodos = async () => {
+    const res = await axios.get('https://todo-fullstack-app-njwt.onrender.com/todos', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setTodos(res.data);
   };
 
   const addTodo = async () => {
-    const token = localStorage.getItem('token');
     await axios.post(
       'https://todo-fullstack-app-njwt.onrender.com/todos',
       { title },
       { headers: { Authorization: `Bearer ${token}` } }
     );
     setTitle('');
-    fetchTodos(token);
+    fetchTodos();
   };
 
   const deleteTodo = async (id) => {
-    const token = localStorage.getItem('token');
     await axios.delete(`https://todo-fullstack-app-njwt.onrender.com/todos/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    fetchTodos(token);
+    fetchTodos();
   };
 
-  if (loading) return <div>Loading...</div>;
+  const logout = () => {
+    localStorage.removeItem('token');
+    Router.push('/login');
+  };
 
   return (
     <div style={{ padding: 20 }}>
       <h1>Your Todos</h1>
+      <button onClick={logout}>Logout</button>
+      <br /><br />
       <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder='New todo' />
       <button onClick={addTodo}>Add</button>
       <ul>
