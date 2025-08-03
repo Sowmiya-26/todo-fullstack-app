@@ -4,3 +4,4 @@ Flask_SQLAlchemy
 flask_dance
 flask_jwt_extended
 flask_mail
+python-dotenv
