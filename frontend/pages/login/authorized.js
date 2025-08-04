@@ -1,24 +1,34 @@
+// frontend/pages/login/authorized.js
+
 import { useEffect } from 'react';
 import axios from 'axios';
 import Router from 'next/router';
 
-export default function GoogleAuthCallback() {
+export default function GoogleAuthRedirect() {
   useEffect(() => {
-    const getToken = async () => {
+    const handleAuth = async () => {
       try {
         const res = await axios.get('https://todo-fullstack-app-njwt.onrender.com/login/google', {
-          withCredentials: true,
+          withCredentials: true
         });
-        localStorage.setItem('token', res.data.access_token);
-        Router.push('/');
-      } catch (err) {
-        console.error(err);
-        alert('Google login failed');
+
+        if (res.data.access_token) {
+          localStorage.setItem('token', res.data.access_token);
+          Router.push('/');
+        } else if (res.data.auth_url) {
+          window.location.href = res.data.auth_url;
+        } else {
+          alert('Google login failed');
+          Router.push('/login');
+        }
+      } catch (error) {
+        console.error('OAuth callback failed:', error);
+        Router.push('/login');
       }
     };
 
-    getToken();
+    handleAuth();
   }, []);
 
-  return <p>Signing you in...</p>;
+  return <p>Logging in with Google...</p>;
 }
