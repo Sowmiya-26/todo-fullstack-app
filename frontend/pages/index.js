@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Router from 'next/router';
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function Home() {
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState('');
@@ -16,7 +18,7 @@ export default function Home() {
   }, []);
 
   const fetchTodos = async () => {
-    const res = await axios.get('https://todo-fullstack-app-njwt.onrender.com/todos', {
+    const res = await axios.get(`${BASE_URL}/todos`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     setTodos(res.data);
@@ -24,7 +26,7 @@ export default function Home() {
 
   const addTodo = async () => {
     await axios.post(
-      'https://todo-fullstack-app-njwt.onrender.com/todos',
+      `${BASE_URL}/todos`,
       { title },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -33,7 +35,7 @@ export default function Home() {
   };
 
   const deleteTodo = async (id) => {
-    await axios.delete(`https://todo-fullstack-app-njwt.onrender.com/todos/${id}`, {
+    await axios.delete(`${BASE_URL}/todos/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     fetchTodos();
@@ -62,3 +64,4 @@ export default function Home() {
     </div>
   );
 }
+
